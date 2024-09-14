@@ -8,7 +8,7 @@ const Translator = () => {
   const [inputText, setInputText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
 
-  const storeConversation = useMutation(api.myFunctions.storeConversation);
+  const storeConversation = useMutation(api.functions.storeConversation);
 
 
   // Text translation handler
@@ -18,11 +18,11 @@ const Translator = () => {
 
   const handleTextTranslate = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/translate', {
-        text: inputText,
-      });
-      setTranslatedText(response.data.translatedText);
-      storeConversation(inputText);
+      // const response = await axios.post('http://localhost:5000/translate', {
+      //   text: inputText,
+      // });
+      // setTranslatedText(response.data.translatedText);
+      storeConversation({text: inputText});
     } catch (error) {
       console.error('Error translating text:', error);
     }
