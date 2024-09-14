@@ -1,11 +1,14 @@
 import React from 'react';
 import Translator from './Translator';
+import ConvexClientProvider from "./ConvexClientProvider";
 
 function App() {
   return (
-    <div className="App">
-      <Translator />
-    </div>
+    <ConvexClientProvider>
+      <div className="App">
+        <Translator />
+      </div>
+    </ConvexClientProvider>
   );
 }
 

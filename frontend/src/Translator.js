@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { ReactMediaRecorder } from 'react-media-recorder';
+import { useMutation } from "convex/react";
+import { api } from "./convex/_generated/api";
 
 const Translator = () => {
   const [inputText, setInputText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
+
+  const storeConversation = useMutation(api.myFunctions.storeConversation);
+
 
   // Text translation handler
   const handleInputChange = (e) => {
@@ -17,6 +22,7 @@ const Translator = () => {
         text: inputText,
       });
       setTranslatedText(response.data.translatedText);
+      storeConversation(inputText);
     } catch (error) {
       console.error('Error translating text:', error);
     }
