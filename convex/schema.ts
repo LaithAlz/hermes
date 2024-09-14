@@ -1,11 +1,17 @@
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
-
-export default defineSchema({
-  conversations: defineTable({
-    originalText: v.string(),
-    translatedText: v.string(),
-    language: v.string(), 
-    timestamp: v.number(),
-  }),
-});
+export const schema = {
+  users: {
+    userId: "string",
+    email: "string",
+    createdAt: "number",
+  },
+  conversations: {
+    participants: "string[]",
+    createdAt: "number",
+  },
+  messages: {
+    conversationId: "string",
+    senderId: "string",
+    text: "string",
+    sentAt: "number",
+  },
+};
