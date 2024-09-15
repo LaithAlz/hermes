@@ -42,3 +42,36 @@ export const getConversations = query(async ({ db }, { conversationId }) => {
     .filter((q) => q.eq(q.field("conversationId"), conversationId))
     .collect();
 });
+
+
+
+export const sendMessage = mutation({
+    args: {
+      conversationId: v.id("conversations"), 
+      senderId: v.string(),             
+      body: v.string(),                    
+    },
+    handler: async ({ db }, { conversationId, senderId, body }) => {
+      const sentAt = Date.now(); 
+  
+      await db.insert("messages", {
+        conversationId,
+        senderId,
+        body,
+        sentAt,
+      });
+    },
+  });
+
+  export const getMessages = query({
+    args: {
+      conversationId: v.id("conversations"),
+    },
+    handler: async ({ db }, { conversationId }) => {
+      return await db
+        .query("messages")
+        .withIndex("by_conversation", (q) => q.eq("conversationId", conversationId))
+        .order("asc", "sentAt")
+        .collect();
+    },
+  });

@@ -1,4 +1,6 @@
 import React from "react";
+import MessageList from "./MessageList";
+import MessageInput from "./MessageInput";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 
@@ -10,11 +12,20 @@ const ConversationDetails = ({ conversationId, goBack }) => {
     return <p>Loading conversation details...</p>;
   }
 
+  // For now, we'll assume the sender is hardcoded as "user1" (replace with dynamic user data later)
+  const senderId = "user1"; 
+
   return (
     <div className="conversation-details">
       <h2>Conversation Details</h2>
       <p>Participants: {conversation.participants.join(", ")}</p>
-      {/* Add more details about the conversation if available */}
+
+      {/* Message List */}
+      <MessageList conversationId={conversationId} />
+
+      {/* Message Input */}
+      <MessageInput conversationId={conversationId} senderId={senderId} />
+
       <button onClick={goBack}>Back to Conversations</button>
     </div>
   );
