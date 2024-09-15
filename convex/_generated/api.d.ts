@@ -15,10 +15,6 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as functions_createConversation from "../functions/createConversation.js";
-import type * as functions_getConversation from "../functions/getConversation.js";
-import type * as messages_getMessage from "../messages/getMessage.js";
-import type * as messages_sendMessage from "../messages/sendMessage.js";
 import type * as myFunctions from "../myFunctions.js";
 
 /**
@@ -30,10 +26,6 @@ import type * as myFunctions from "../myFunctions.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "functions/createConversation": typeof functions_createConversation;
-  "functions/getConversation": typeof functions_getConversation;
-  "messages/getMessage": typeof messages_getMessage;
-  "messages/sendMessage": typeof messages_sendMessage;
   myFunctions: typeof myFunctions;
 }>;
 export declare const api: FilterApi<
