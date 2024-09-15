@@ -79,10 +79,11 @@ export const sendMessage = mutation({
 
   export const registerUser = mutation({
     args: {
-      name: v.string(),    
+      name: v.string(),          
+      email: v.string(),   
       tokenIdentifier: v.string(), 
     },
-    handler: async ({ db }, { name, tokenIdentifier }) => {
+    handler: async ({ db }, { name, email, tokenIdentifier }) => {
       const existingUser = await db
         .query("users")
         .withIndex("by_token", (q) => q.eq("tokenIdentifier", tokenIdentifier))
@@ -93,13 +94,16 @@ export const sendMessage = mutation({
       }
   
       const userId = await db.insert("users", {
-        name,
-        tokenIdentifier,
+        tokenIdentifier: tokenIdentifier,            
+        email: email,
+        name: name,
+        createdAt: Date.now(),
       });
   
-      return { _id: userId, name, tokenIdentifier };
+      return { _id: userId, name, email, tokenIdentifier };
     },
   });
+  
 
   export const getAllUsers = query({
     handler: async ({ db }) => {
