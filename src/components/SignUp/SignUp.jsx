@@ -5,33 +5,49 @@ import { doCreateUserWithEmailAndPassword } from '../Firebase/firebase'
 import styles from './SignUp.module.css'
 import HermesLogo from '../../assets/HermesLogo.svg'
 import SocialsIcons from '../SignIn/SocialsIcons';
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 function SignUp() {
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
+    // Convex mutation to register user in Convex
+    const registerUserInConvex = useMutation(api.myFunctions.registerUser);
 
-    const { currentUser } = useAuth()
+    // Check if user is already logged in
+    const { currentUser } = useAuth();
     useEffect(() => {
         if (currentUser) {
-            navigate('/')
+            navigate('/');
         }
-    }, [currentUser])
+    }, [currentUser]);
 
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleSignUp = (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault();
-        doCreateUserWithEmailAndPassword(email, password)
-        .then(() => {      
+        try {
+            // Sign up user with Firebase Authentication
+            const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+    
+            // Register the user in Convex with name and tokenIdentifier
+            await registerUserInConvex({
+                name: name,  // Pass the name that the user inputs
+                email: user.email,
+                tokenIdentifier: user.uid, // Use uid as tokenIdentifier
+            });
+    
             setName('');
             setEmail('');
             setPassword('');
             navigate('/');
-        }).catch(error => {/* error handling */ });
+        } catch (error) {
+            console.error("Error during sign-up:", error);
+        }
     };
-
     return (
         <div className={styles.signinuppage}>
             <img src={HermesLogo} className={styles.logo} alt="Hermes, communicate with your community"/>

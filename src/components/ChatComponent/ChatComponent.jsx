@@ -1,71 +1,169 @@
-import React from "react";
-import styles from './ChatComponent.module.css';
-import UserProfile from './UserProfile';
-import ChatMessage from './ChatMessage';
-import ChatInput from './ChatInput';
+import { useState, useRef } from "react";
+import axios from "axios";
+import { useChat } from "./ChatContext";
 
-const chatHistory = [
-  {
-    date: "Sept 8th, 2024",
-    description: "Tummy troubles"
-  },
-  {
-    date: "Sept 2nd, 2024",
-    description: "Tummy troubles"
-  },
-  {
-    date: "Aug 14th, 2024",
-    description: "Ankle injury"
+const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
+
+const ChatBox = () => {
+
+  const [input, setInput] = useState("");
+  const [user1AudioUrl, setUser1AudioUrl] = useState(null);
+  const [user2AudioUrl, setUser2AudioUrl] = useState(null);
+  const [currentSpeaker, setCurrentSpeaker] = useState(null);
+
+  const recognitionRef1 = useRef(null);
+  const recognitionRef2 = useRef(null);
+
+  const setupSpeechRecognition = (lang, setInput) => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return null;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = lang;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      const lastResult = event.results[event.results.length - 1];
+      if (lastResult.isFinal) {
+        setInput(lastResult[0].transcript);
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error", event.error);
+    };
+
+    return recognition;
+  };
+
+  if (!recognitionRef1.current) {
+    recognitionRef1.current = setupSpeechRecognition("en-US", setInput);
   }
-];
 
-function ChatComponent() {
+  if (!recognitionRef2.current) {
+    recognitionRef2.current = setupSpeechRecognition("fr-CA", setInput);
+  }
+
+  const startListeningUser1 = () => {
+    recognitionRef1.current?.start();
+    setCurrentSpeaker(1);
+  };
+
+  const startListeningUser2 = () => {
+    recognitionRef2.current?.start();
+    setCurrentSpeaker(2);
+  };
+
+  const { conversation, addMessage } = useChat();
+
+  const handleSubmit = async () => {
+    if (input.trim() === "") return;
+    if (currentSpeaker === null) return;
+    
+    const targetLanguage = currentSpeaker === 1 ? "fr" : "en";
+    const translatedText = await translateText(input, targetLanguage);
+    const audioUrl = await generateAudio(translatedText, targetLanguage);
+
+    const newMessage = {
+      user: `User ${currentSpeaker}`,
+      originalText: input,
+      translatedText,
+      audioUrl,
+    };
+
+    addMessage(newMessage);
+
+    console.log(audioUrl)
+    const audio = new Audio(audioUrl);
+    if (currentSpeaker === 1) {
+      setUser1AudioUrl(audio);
+    } else {
+      setUser2AudioUrl(audio);
+    }
+
+    setInput("");
+  };
+
+  const translateText = async (text, targetLanguage) => {
+    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+    const data = {
+      q: text,
+      target: targetLanguage,
+    };
+    try {
+      const response = await axios.post(url, data);
+      return response.data.data.translations[0].translatedText;
+    } catch (error) {
+      console.error("Translation Error:", error);
+    }
+  };
+
+  const generateAudio = async (text, languageCode) => {
+    const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
+    const ttsLanguageCode = `${languageCode}-${languageCode.toUpperCase()}`;
+    const ttsVoice = languageCode === "fr" ? "fr-FR-Wavenet-A" : "en-US-Wavenet-A";
+
+    const requestData = {
+      input: { text },
+      voice: {
+        languageCode: ttsLanguageCode,
+        name: ttsVoice,
+      },
+      audioConfig: {
+        audioEncoding: "MP3",
+      },
+    };
+
+    try {
+      const response = await axios.post(url, requestData);
+      const audioContent = response.data.audioContent;
+
+      const audioBlob = new Blob([new Uint8Array(atob(audioContent).split("").map((c) => c.charCodeAt(0)))], {
+        type: "audio/mp3",
+      });
+      return URL.createObjectURL(audioBlob);
+    } catch (error) {
+      console.error("Error generating audio:", error);
+    }
+  };
+
+  const playAudio = (audio) => {
+    if (audio) {
+      audio.play();
+    }
+  };
+
   return (
-    <main className={styles.chatContainer}>
-      <div className={styles.chatWrapper}>
-        <aside className={styles.sidebar}>
-          <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/5db8042574203c03fa40661834c9645d4355a7b36255c2af281ddb99a0d844a7?placeholderIfAbsent=true&apiKey=1198155fd72e422389e8f557dc5272e2" alt="" className={styles.logoIcon} />
-          <UserProfile
-            name="Jacque Deaux"
-            language="French"
-            chatHistory={chatHistory}
-          />
-          <button className={styles.takeNotes}>Take notes</button>
-        </aside>
-        <section className={styles.messageContainer}>
-          <ChatMessage
-            sender="Ben"
-            avatar="https://cdn.builder.io/api/v1/image/assets/TEMP/73dfb82884ef0eb8e11b0def5d344b75baad08c3751792abb2cb9a2372801b48?placeholderIfAbsent=true&apiKey=1198155fd72e422389e8f557dc5272e2"
-            messages={[
-              "Hello, my name is Ben! How are you?",
-              "Bonjour, je m'appelle Ben ! Comment allez-vous ?"
-            ]}
-            isUser={true}
-          />
-          <ChatMessage
-            sender="Jacque"
-            avatar="https://cdn.builder.io/api/v1/image/assets/TEMP/c49eeeaaf6cc6b5ef4a604912be1a0b855c524c888f53f748731b756783dfdbd?placeholderIfAbsent=true&apiKey=1198155fd72e422389e8f557dc5272e2"
-            messages={[
-              "Salut Ben ! C'est Jacque, on a déjà discuté plusieurs fois.",
-              "Hi Ben! It's Jacque, we've chatted many times already."
-            ]}
-            isUser={false}
-          />
-          <ChatMessage
-            sender="Ben"
-            avatar="https://cdn.builder.io/api/v1/image/assets/TEMP/e85008a2fac7d94cd8a0067f801ab9b252ffcd0b9e066b0a0a1cb77be0217182?placeholderIfAbsent=true&apiKey=1198155fd72e422389e8f557dc5272e2"
-            messages={[
-              "Oh right! I see our chat history. I'm sorry I forgot.",
-              "Ah oui, c'est vrai ! Je vois ton historique de discussion. Je suis désolé, j'ai oublié."
-            ]}
-            isUser={true}
-          />
-          <ChatInput />
-        </section>
-      </div>
-      <button className={styles.stopButton}>Stop</button>
-    </main>
-  );
-}
+    <div>
+      <h2>Chat Box</h2>
 
-export default ChatComponent;
+      <div>
+      <button onClick={startListeningUser1}>Speak in English</button>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter text here/speak to populate"
+        />
+        <button onClick={startListeningUser2}>Speak in French</button>
+
+        <button onClick={handleSubmit}>Send</button>
+
+      </div>
+
+      <div>
+        <h3>Conversation:</h3>
+        {conversation.map((msg, index) => (
+          <div key={index} className={`message ${msg.user}`}>
+            <strong>{msg.user}:</strong>
+            <p>Original: {msg.originalText}</p>
+            <p>Translated: {msg.translatedText}</p>
+            <button onClick={() => playAudio(currentSpeaker === 1 ? user1AudioUrl : currentSpeaker === 2 ? user2AudioUrl : null)}>Play</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ChatBox;
