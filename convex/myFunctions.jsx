@@ -125,7 +125,7 @@ export const getUserByToken = query({
   },
   handler: async ({ db }, { tokenIdentifier }) => {
     const user = await db
-      .query("users") // querying the "users" table
+      .query("users") 
       .withIndex("by_token", q => q.eq("tokenIdentifier", tokenIdentifier)) 
       .first(); 
 

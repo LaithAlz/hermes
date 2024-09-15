@@ -6,13 +6,13 @@ import { api } from "../../../convex/_generated/api";
 import "./ChatBox.css"; // Import the CSS file
 import CohereSummary from "../Summary/CohereSummary";
 import { doSignOut } from "../Firebase/firebase";
-import { useNavigate, useLocation } from "react-router-dom"; // For accessing navigation state
+import { useNavigate, useLocation } from "react-router-dom"; 
 
 const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
 
 const ChatBox = () => {
-  const location = useLocation(); // To get passed conversationId
-  const { conversationId } = location.state; // Extract the conversationId from state (language is no longer needed)
+  const location = useLocation(); 
+  const { conversationId } = location.state; 
 
   const decodeHtmlEntities = (text) => {
     const textArea = document.createElement("textarea");
@@ -25,24 +25,23 @@ const ChatBox = () => {
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
   const [userAudioUrl, setUserAudioUrl] = useState(null);
 
-  const recognitionRef1 = useRef(null); // Ref for English
-  const recognitionRef2 = useRef(null); // Ref for Arabic
+  const recognitionRef1 = useRef(null); 
+  const recognitionRef2 = useRef(null); 
   const audioRef = useRef(null);
 
   const { conversation, addMessage, setConversation } = useChat();
 
   const storeMessage = useMutation(api.myFunctions.storeMessage);
   const getMessages = useQuery(api.myFunctions.getMessages, {
-    conversationId, // Use the conversationId passed dynamically
+    conversationId, 
   });
 
-  const senderIdUser1 = "jd75rdv8e9s340ktem1jydn1j570vp4r"; // Replace with current user ID
-  const senderIdUser2 = "jd781h00mrb7wz724k2xza4h8d70tq35"; // Replace with recipient user ID
+  const senderIdUser1 = "jd75rdv8e9s340ktem1jydn1j570vp4r"; 
+  const senderIdUser2 = "jd781h00mrb7wz724k2xza4h8d70tq35"; 
 
-  // Only load messages from the specific conversationId
   useEffect(() => {
     if (getMessages) {
-      setConversation(getMessages); // Load the conversation from the database
+      setConversation(getMessages);
     }
   }, [getMessages, setConversation]);
 
@@ -70,27 +69,24 @@ const ChatBox = () => {
     return recognition;
   };
 
-  // Initialize English and hardcoded Arabic speech recognition
   useEffect(() => {
     if (!recognitionRef1.current) {
-      // Setup speech recognition for English
       recognitionRef1.current = setupSpeechRecognition("en-US", setInput);
     }
 
     if (!recognitionRef2.current) {
-      // Setup speech recognition for Arabic (hardcoded)
       recognitionRef2.current = setupSpeechRecognition("ar-SA", setInput);
     }
   }, []);
 
   const startListeningUser1 = () => {
     recognitionRef1.current?.start();
-    setCurrentSpeaker(1); // User 1 speaks English
+    setCurrentSpeaker(1); 
   };
 
   const startListeningUser2 = () => {
     recognitionRef2.current?.start();
-    setCurrentSpeaker(2); // User 2 speaks Arabic
+    setCurrentSpeaker(2);
   };
 
   const handleSubmit = async () => {
@@ -158,8 +154,8 @@ const ChatBox = () => {
   const generateAudio = async (text, languageCode) => {
     const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
     const ttsVoice = languageCode === "ar"
-      ? "ar-XA-Wavenet-A" // Hardcode Arabic voice for TTS
-      : "en-US-Wavenet-A"; // Default to English
+      ? "ar-XA-Wavenet-A"
+      : "en-US-Wavenet-A";
 
     const requestData = {
       input: { text },

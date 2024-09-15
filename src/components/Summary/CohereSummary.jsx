@@ -10,7 +10,6 @@ const CohereSummary = ({ conversationId }) => {
 
   const apiKey = "7KoKi6DUUw4by6PiTOc2kSXDivoO2yBiequLuHA8"; // Use your actual Cohere API key
 
-  // Fetch messages using useQuery hook
   const messages = useQuery(api.myFunctions.getMessages, {
     conversationId,
   });
@@ -42,14 +41,11 @@ const CohereSummary = ({ conversationId }) => {
 
   const formatConversation = (messages) => {
     return messages.map((message) => {
-      // Check if message.textInEnglish is defined
       let text = message.textInEnglish || "No message provided";
 
-      // Ensure language is defined and fallback if necessary
       let language = message.language || "unknown";
       let role;
 
-      // Determine the role based on the language
       if (language === "en") {
         role = "PERSON 1";
         text += " (said in English)";
@@ -69,7 +65,7 @@ const CohereSummary = ({ conversationId }) => {
 
   const summarizeConversationBullets = async (messages) => {
     const formattedConversation = messages
-      .map((message) => message.message) // Extract only the message text
+      .map((message) => message.message)
       .join("\n");
 
     console.log("Formatted Conversation:", formattedConversation);
@@ -92,7 +88,7 @@ const CohereSummary = ({ conversationId }) => {
 
       console.log("Full API Response:", response.data.text);
 
-      return response.data.text; // Return the summary
+      return response.data.text; 
     } catch (error) {
       console.error("Error with Cohere API:", error);
       return null;
@@ -101,7 +97,7 @@ const CohereSummary = ({ conversationId }) => {
 
   const summarizeConversationDetails = async (messages) => {
     const formattedConversation = messages
-      .map((message) => message.message) // Extract only the message text
+      .map((message) => message.message) 
       .join("\n");
 
     console.log("Formatted Conversation:", formattedConversation);
@@ -156,7 +152,7 @@ const CohereSummary = ({ conversationId }) => {
 
       console.log("Full API Response:", response.data.text);
 
-      return response.data.text; // Return the summary
+      return response.data.text; 
     } catch (error) {
       console.error("Error with Cohere API:", error);
       return null;

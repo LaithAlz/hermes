@@ -11,10 +11,8 @@ import { api } from "../../../convex/_generated/api";
 function SignUp() {
     const navigate = useNavigate();
 
-    // Convex mutation to register user in Convex
     const registerUserInConvex = useMutation(api.myFunctions.registerUser);
 
-    // Check if user is already logged in
     const { currentUser } = useAuth();
     useEffect(() => {
         if (currentUser) {
@@ -29,11 +27,9 @@ function SignUp() {
     const handleSignUp = async (e) => {
         e.preventDefault();
         try {
-            // Sign up user with Firebase Authentication
             const userCredential = await doCreateUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
     
-            // Register the user in Convex with name and tokenIdentifier
             await registerUserInConvex({
                 name: name,  // Pass the name that the user inputs
                 email: user.email,

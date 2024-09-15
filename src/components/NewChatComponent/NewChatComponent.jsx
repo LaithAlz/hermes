@@ -24,10 +24,8 @@ function NewChatComponent() {
   const handleLanguageSelection = async (language) => {
     const participants = [userId, "user2"];
 
-    // Call the createConversation mutation to create the conversation in Convex
     const { conversationId } = await createConversation({ participants });
 
-    // Navigate to the ChatComponent with the conversationId and selected language
     navigate(`/conversation/${conversationId}`, {
       state: { language, conversationId },
     });

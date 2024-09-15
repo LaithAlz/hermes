@@ -16,7 +16,6 @@ function Home() {
 
   const today = new Date().toLocaleDateString();
 
-  // Hardcoded conversations
   const conversations = [
     {
       _id: "1",
