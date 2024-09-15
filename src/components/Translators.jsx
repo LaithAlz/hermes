@@ -1,3 +1,4 @@
+<<<<<<< HEAD:src/components/Translators.jsx
 import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import axios from "axios";
@@ -11,86 +12,21 @@ function Translators() {
   const [translatedText, setTranslatedText] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
   const [targetLanguage, setTargetLanguage] = useState("ar");
+=======
+import React, { useState } from "react";
+import ConversationList from "./ConversationList";
+import ConversationDetails from "./ConversationDetails";
 
-  const addConversation = useMutation(api.conversations.addConversation);
+const App = () => {
+  const [selectedConversationId, setSelectedConversationId] = useState(null);
+>>>>>>> conversations-setup:src/App.jsx
 
-  const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
-
-  const handleInputChange = (event) => {
-    setInputText(event.target.value);
+  // Function to handle selecting a conversation
+  const handleSelectConversation = (conversationId) => {
+    setSelectedConversationId(conversationId);
   };
 
-  const handleTextTranslate = async () => {
-    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-    const data = {
-      q: inputText,
-      target: targetLanguage,
-    };
-
-    await axios
-      .post(url, data)
-      .then(async (response) => {
-        const translatedText = response.data.data.translations[0].translatedText;
-        setTranslatedText(translatedText);
-
-        await handleTextToSpeech(translatedText);
-      })
-      .catch((error) => {
-        console.error(
-          "Error:",
-          error.response ? error.response.data : error.message
-        );
-      });
-
-    await addConversation({
-      originalText: inputText,
-      translatedText: translatedText,
-      language: targetLanguage,
-    });
-  };
-
-  const handleTextToSpeech = async (textToSpeak) => {
-    const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
-
-    const ttsLanguageCode = `${targetLanguage}-${targetLanguage.toUpperCase()}`;
-    const ttsVoice = targetLanguage === "ar" ? "ar-XA-Wavenet-A" : `${targetLanguage}-Wavenet-A`;
-
-    const requestData = {
-      input: {
-        text: textToSpeak,
-      },
-      voice: {
-        languageCode: ttsLanguageCode,
-        name: ttsVoice,
-      },
-      audioConfig: {
-        audioEncoding: "MP3",
-      },
-    };
-
-    try {
-      const response = await axios.post(url, requestData);
-      const audioContent = response.data.audioContent;
-
-      const audioBlob = new Blob(
-        [
-          new Uint8Array(
-            atob(audioContent)
-              .split("")
-              .map((c) => c.charCodeAt(0))
-          ),
-        ],
-        {
-          type: "audio/mp3",
-        }
-      );
-      const audioUrl = URL.createObjectURL(audioBlob);
-      setAudioUrl(audioUrl);
-    } catch (error) {
-      console.error("Error converting text to speech:", error);
-    }
-  };
-
+<<<<<<< HEAD:src/components/Translators.jsx
   const navigate = useNavigate();
   const { currentUser } = useAuth()
   useEffect(() => {
@@ -116,18 +52,21 @@ function Translators() {
           <h3>Translated Text:</h3>
           <p>{translatedText}</p>
         </div>
+=======
+  // If a conversation is selected, show the details; otherwise, show the list
+  return (
+    <div className="app">
+      {!selectedConversationId ? (
+        <ConversationList onSelectConversation={handleSelectConversation} />
+      ) : (
+        <ConversationDetails
+          conversationId={selectedConversationId}
+          goBack={() => setSelectedConversationId(null)} // Function to go back to the list
+        />
+>>>>>>> conversations-setup:src/App.jsx
       )}
-
-      <div>
-        {audioUrl && (
-          <audio controls>
-            <source src={audioUrl} type="audio/mp3" />
-            Your browser does not support the audio tag.
-          </audio>
-        )}
-      </div>
     </div>
   );
-}
+};
 
 export default Translators;
