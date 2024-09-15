@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from "../Firebase/context";
 import { doSignInWithEmailAndPassword } from '../Firebase/firebase'
+import styles from './SignIn.module.css'
+import HermesLogo from '../../assets/HermesLogo.svg'
+import SocialsIcons from './SocialsIcons';
 
 function SignIn() {
 
@@ -27,31 +30,47 @@ function SignIn() {
     }
 
     return (
-        <form onSubmit={handleLogin}>
+        <div className={styles.signinuppage}>
+            <img src={HermesLogo} className={styles.logo} alt="Hermes, communicate with your community"/>
+        <form className={styles.signinpage} onSubmit={handleLogin}>
             <div>
-                <label htmlFor="email">Email:</label>
+                {/* <label htmlFor="email">Email:</label> */}
                 <input
+                className={styles.textinput}
                     type="email"
                     id="email"
+                    placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
             </div>
             <div>
-                <label htmlFor="password">Password:</label>
+                {/* <label htmlFor="password">Password:</label> */}
                 <input
+                className={styles.textinput}
                     type="password"
                     id="password"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
             </div>
             <div>
-                <button type="submit">Login</button>
+                <button className={styles.inputbutton} type="submit">Login</button>
             </div>
+            <div className={styles.signinflow}>
+                <span>Don’t have an account? </span> 
+                <Link to="/signup" style={{ textDecoration: 'none' }}>
+                <span className={styles.signuplink}>Sign up now!</span>
+                </Link>
+            </div>
+            
         </form>
+        <SocialsIcons/>
+        <div><span>©2024</span></div>
+        </div>
     );
 }
 

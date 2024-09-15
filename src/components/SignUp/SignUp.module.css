@@ -1,0 +1,60 @@
+body{
+    background-color: white;
+    color: #2D3641;
+    margin: 0 auto;
+}
+
+.logo{
+    max-width: 356.5px;
+    margin-bottom: 80px;
+}
+
+.signinuppage {
+    display: flex; /* Use flexbox */
+    flex-direction: column; /* Stack child elements vertically */
+    align-items: center; /* Center children horizontally */
+    width: 80%; /* Set a width to allow centering */
+    max-width: 600px; /* Optional: Set a max-width for better responsiveness */
+    text-align: center; /* Center text within this container */
+
+}
+
+.signinpage {
+text-align: center;
+}
+
+.textinput{
+    max-width: 254px;
+    max-height: 50px;
+    padding: 16px;
+    background-color: white;
+    color: #2D3641;
+    border-color: #2D3641;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.textinput label{
+
+    color: #2D3641;
+ 
+}
+
+.inputbutton{
+    width: 126px;
+    height: 48px;
+    margin-top: 48px;
+    margin-bottom: 60px;
+    border-radius: 12px;
+    background-color: #2D3641;
+    color: white;
+    font-size: 12px;
+}
+
+.signinflow {
+    margin-bottom: 16px;
+}
+
+.signuplink {
+    margin-left: 2px;
+}
