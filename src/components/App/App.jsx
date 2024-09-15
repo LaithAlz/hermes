@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '../Firebase/context';
+import { ChatProvider } from '../../ChatContext'; // Import ChatProvider for managing chat state
 import Translators from '../Translators';
 import SignIn from '../SignIn/SignIn';
 import SignUp from '../SignUp/SignUp';
@@ -20,13 +21,26 @@ function App() {
     { path: "/test3", element: <NewChatComponent /> },
     { path: "/test4", element: <PostChat /> },
   ];
-  
+
   return ( 
     <>
       <AuthProvider>
         <Router>
           <Routes>
-            {routes.map(route => (<Route key={route.path} path={route.path} element={route.element} />))}
+            {routes.map(route => {
+              if (route.path === "/" || route.path === "/test1") {
+                return (
+                  <Route 
+                    key={route.path} 
+                    path={route.path} 
+                    element={
+                      <ChatProvider>{route.element}</ChatProvider>
+                    } 
+                  />
+                );
+              }
+              return <Route key={route.path} path={route.path} element={route.element} />;
+            })}
           </Routes>
         </Router>
       </AuthProvider>
