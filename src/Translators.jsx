@@ -95,7 +95,7 @@ function Translators() {
   const { currentUser } = useAuth()
   useEffect(() => {
     if (!currentUser) {
-        navigate("/login");
+        navigate("/signin");
     }
   }, [currentUser]);
 
