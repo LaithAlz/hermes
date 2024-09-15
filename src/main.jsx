@@ -5,7 +5,7 @@ import "./index.css";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 
 // Create a Convex client
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
+const convex = new ConvexReactClient('https://next-puma-872.convex.cloud');
 
 // Render the app with ConvexProvider
 ReactDOM.createRoot(document.getElementById("root")).render(
