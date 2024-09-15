@@ -89,7 +89,6 @@ function SignUp() {
                 />
                
             </div>
-            <span>Warning: Password must be at least 6 characters</span>
             <div>
                 <button className={styles.inputbutton} type="submit">Sign Up</button>
             </div>

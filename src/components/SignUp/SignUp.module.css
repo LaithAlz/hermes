@@ -1,22 +1,13 @@
-body{
-    background-color: white;
-    color: #2D3641;
-    margin: 0 auto;
-}
-
 .logo{
     max-width: 356.5px;
-    margin-bottom: 80px;
+    margin-bottom: 70px;
 }
 
 .signinuppage {
     display: flex; /* Use flexbox */
     flex-direction: column; /* Stack child elements vertically */
     align-items: center; /* Center children horizontally */
-    width: 80%; /* Set a width to allow centering */
-    max-width: 600px; /* Optional: Set a max-width for better responsiveness */
     text-align: center; /* Center text within this container */
-
 }
 
 .signinpage {
