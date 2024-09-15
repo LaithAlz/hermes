@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useChat } from "./ChatContext";
 import { useMutation, useQuery } from "convex/react";
@@ -9,7 +8,7 @@ import ConversationSummary from "../PostChat/ConversationSummary";
 import CohereSummary from "../Summary/CohereSummary";
 import { useAuth } from "../Firebase/context";
 import { doSignOut } from "../Firebase/firebase";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
 
@@ -91,8 +90,7 @@ const ChatBox = () => {
     let textInEnglish;
     let language = "en";
 
-    if (targetLanguage == "en") {
-      //HARD CODING ENGLISH LANGUAGE TO DB
+    if (targetLanguage === "en") {
       textInEnglish = translatedText;
       language = "fr";
     } else {
@@ -238,6 +236,7 @@ const ChatBox = () => {
 
         <CohereSummary conversationId={conversationId} />
       </div>
+    </div> // Closing div added here
   );
 };
 
