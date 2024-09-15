@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import axios from "axios";
 import { api } from "../convex/_generated/api";
+import { useAuth } from "./Firebase/context";
+import { doSignOut } from "./Firebase/firebase";
+import {useNavigate} from 'react-router-dom';
 
-function App() {
+function Translators() {
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
@@ -88,8 +91,18 @@ function App() {
     }
   };
 
+  const navigate = useNavigate();
+  const { currentUser } = useAuth()
+  useEffect(() => {
+    if (!currentUser) {
+        navigate("/signin");
+    }
+  }, [currentUser]);
+
   return (
     <div>
+      {!!currentUser && <div>Hello {currentUser.email}!</div>}
+      <button onClick={doSignOut}>Sign out</button>
       <h1>Translator</h1>
       <textarea
         value={inputText}
@@ -117,4 +130,4 @@ function App() {
   );
 }
 
-export default App;
+export default Translators;
