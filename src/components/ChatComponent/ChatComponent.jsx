@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
 
-const ChatBox = () => {
+const ChatBox = ({ language, shortCode, longCode }) => {
 
   const [input, setInput] = useState("");
   const [user1AudioUrl, setUser1AudioUrl] = useState(null);
@@ -45,7 +45,7 @@ const ChatBox = () => {
   }
 
   if (!recognitionRef2.current) {
-    recognitionRef2.current = setupSpeechRecognition("fr-CA", setInput);
+    recognitionRef2.current = setupSpeechRecognition(longCode, setInput);
   }
 
   const startListeningUser1 = () => {
@@ -64,7 +64,7 @@ const ChatBox = () => {
     if (input.trim() === "") return;
     if (currentSpeaker === null) return;
     
-    const targetLanguage = currentSpeaker === 1 ? "fr" : "en";
+    const targetLanguage = currentSpeaker === 1 ? shortCode : "en";
     const translatedText = await translateText(input, targetLanguage);
     const audioUrl = await generateAudio(translatedText, targetLanguage);
 
@@ -77,7 +77,6 @@ const ChatBox = () => {
 
     addMessage(newMessage);
 
-    console.log(audioUrl)
     const audio = new Audio(audioUrl);
     if (currentSpeaker === 1) {
       setUser1AudioUrl(audio);
@@ -105,7 +104,7 @@ const ChatBox = () => {
   const generateAudio = async (text, languageCode) => {
     const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
     const ttsLanguageCode = `${languageCode}-${languageCode.toUpperCase()}`;
-    const ttsVoice = languageCode === "fr" ? "fr-FR-Wavenet-A" : "en-US-Wavenet-A";
+    const ttsVoice = languageCode === shortCode ? `${longCode}-Wavenet-A` : "en-US-Wavenet-A";
 
     const requestData = {
       input: { text },
@@ -156,7 +155,7 @@ const ChatBox = () => {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Enter text here/speak to populate"
         />
-        <button onClick={startListeningUser2}>Speak in French</button>
+        <button onClick={startListeningUser2}>Speak in {language}</button>
 
         <button onClick={handleSubmit}>Send</button>
 

@@ -1,42 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './NewChatComponent.module.css';
-import LanguageOption from './LanguageOption';
-import LanguageSelector from './LanguageSelector';
-import ChatHeader from './ChatHeader';
-
-const languageOptions = [
-  { text: "Let's hear you speak", language: "English" },
-  { text: "Laissez-nous vous écouter parler!", language: "French" },
-  { text: "¡Vamos a escucharte hablar!", language: "Spanish" }
-];
+import ChatComponent from '../ChatComponent/ChatComponent';
 
 function NewChatComponent() {
+
+  const languages = [
+    { language: "French", shortCode: 'fr', longCode: "fr-FR"},
+    { language: "Spanish", shortCode: 'es', longCode: "es-ES" },
+    { language: "Chinese", shortCode: 'zh', longCode: "zh-CN" },
+    { language: "Arabic", shortCode: 'ar', longCode: "ar-XA" },
+    { language: "Russian", shortCode: 'ru', longCode: "ru-RU" },
+];
+
+  const [language, setLanguage] = useState(null);
+
+  const handleLanguageSelection = (language) => {
+    setLanguage(language);
+  }
+
+  if (language) { 
+    return <ChatComponent language={language.language} shortCode={language.shortCode} longCode={language.longCode}/>
+  }
+
   return (
-    <main className={styles.newChat}>
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <aside className={styles.sidebar}>
-            <div className={styles.sidebarContent}>
-              <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/59ac9841415b9b13de17d6c98af590b676ebdb0ba556370f9d13fba1bc59091b?placeholderIfAbsent=true&apiKey=1198155fd72e422389e8f557dc5272e2" alt="Chat icon" className={styles.chatIcon} />
-              <div className={styles.userInputs}>
-                <input type="text" placeholder="Name" className={styles.nameInput} aria-label="Enter your name" />
-                <LanguageSelector />
-              </div>
-              <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/e369d98f3d92b5146e0277661146b14dfbc96397daa85bc972d6fcc3466b5f5b?placeholderIfAbsent=true&apiKey=1198155fd72e422389e8f557dc5272e2" alt="Settings icon" className={styles.settingsIcon} />
-            </div>
-          </aside>
-          <section className={styles.mainContent}>
-            <ChatHeader />
-            <div className={styles.languageOptions}>
-              {languageOptions.map((option, index) => (
-                <LanguageOption key={index} text={option.text} language={option.language} />
-              ))}
-            </div>
-          </section>
-        </div>
+    <div className={styles.container}>
+      <h1 className={styles.Title}>Select a language you would like to communicate in</h1>
+      <div className={styles.buttonList}>
+        {languages.map((language) => (
+          <button key={language.languageCode} onClick={() => handleLanguageSelection(language)}>
+              Let's Talk in {language.language}
+          </button>
+        ))}
       </div>
-      <button className={styles.startButton}>Start</button>
-    </main>
+    </div>
   );
 }
 

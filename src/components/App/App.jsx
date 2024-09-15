@@ -4,20 +4,18 @@ import { AuthProvider } from '../Firebase/context';
 import { ChatProvider } from '../ChatComponent/ChatContext';
 import SignIn from '../SignIn/SignIn';
 import SignUp from '../SignUp/SignUp';
-import ChatComponent from '../ChatComponent/ChatComponent';
-import HomePage from '../HomePage/Home';
+import Home from '../Home/Home';
 import NewChatComponent from '../NewChatComponent/NewChatComponent';
 import PostChat from '../PostChat/PostChat';
+import ChatComponent from '../ChatComponent/ChatComponent';
 
 function App() {
 
   const routes = [
-    { path: "/", element: <ChatComponent/> },
+    { path: "/", element: <Home /> },
     { path: "/signin", element: <SignIn /> },
     { path: "/signup", element: <SignUp /> },
-    { path: "/test2", element: <HomePage /> },
-    { path: "/test3", element: <NewChatComponent /> },
-    { path: "/test4", element: <PostChat /> },
+    { path: "/newchat", element: <NewChatComponent /> },
   ];
 
   return ( 
@@ -26,7 +24,7 @@ function App() {
         <Router>
           <Routes>
             {routes.map(route => {
-              if (route.path === "/") {
+              if (route.path === "/newchat") {
                 return (
                   <Route 
                     key={route.path} 
