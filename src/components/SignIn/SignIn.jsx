@@ -11,6 +11,7 @@ function SignIn() {
     const navigate = useNavigate()
 
     const { currentUser } = useAuth()
+    
     useEffect(() => {
         if (currentUser) {
             navigate('/')

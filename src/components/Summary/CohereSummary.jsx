@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 const CohereSummary = ({ conversationId }) => {
   const [bulletSummary, setBulletSummary] = useState("");
   const [detailedSummary, setDetailedSummary] = useState("");
+  const [tag, setTags] = useState("");
 
   const apiKey = "7KoKi6DUUw4by6PiTOc2kSXDivoO2yBiequLuHA8"; // Use your actual Cohere API key
 
@@ -25,43 +26,46 @@ const CohereSummary = ({ conversationId }) => {
           formattedConversation
         );
 
+        const tags = await conversationTags(formattedConversation);
+
         console.log("Bullet Summary:", bulletSummary); // Debugging: Check if bullet summary is set
         console.log("Detailed Summary:", detailedSummary); // Debugging: Check if detailed summary is set
+        console.log("Tags:", tags); // Debugging: Check if detailed summary is set
 
         setBulletSummary(bulletSummary);
         setDetailedSummary(detailedSummary);
+        setTags(tags);
       }
     };
     summarize();
   }, [messages]);
 
-const formatConversation = (messages) => {
-  return messages.map((message) => {
-    // Check if message.textInEnglish is defined
-    let text = message.textInEnglish || "No message provided"; 
-    
-    // Ensure language is defined and fallback if necessary
-    let language = message.language || "unknown";
-    let role;
+  const formatConversation = (messages) => {
+    return messages.map((message) => {
+      // Check if message.textInEnglish is defined
+      let text = message.textInEnglish || "No message provided";
 
-    // Determine the role based on the language
-    if (language === "en") {
-      role = "PERSON 1";
-      text += " (said in English)";
-    } else if (language === "fr") {
-      role = "PERSON 2";
-      text += " (said in French, translated to English)";
-    } else {
-      role = "UNKNOWN"; // Handle unknown or undefined language
-      text += " (language unknown)";
-    }
+      // Ensure language is defined and fallback if necessary
+      let language = message.language || "unknown";
+      let role;
 
-    console.log(`Language: ${language}, Role: ${role}, Message: ${text}`);
+      // Determine the role based on the language
+      if (language === "en") {
+        role = "PERSON 1";
+        text += " (said in English)";
+      } else if (language === "fr") {
+        role = "PERSON 2";
+        text += " (said in French, translated to English)";
+      } else {
+        role = "UNKNOWN"; // Handle unknown or undefined language
+        text += " (language unknown)";
+      }
 
-    return { role, message: text };
-  });
-};
+      console.log(`Language: ${language}, Role: ${role}, Message: ${text}`);
 
+      return { role, message: text };
+    });
+  };
 
   const summarizeConversationBullets = async (messages) => {
     const formattedConversation = messages
@@ -127,6 +131,38 @@ const formatConversation = (messages) => {
     }
   };
 
+  const conversationTags = async (messages) => {
+    const formattedConversation = messages
+      .map((message) => message.message)
+      .join("\n");
+
+    console.log("Formatted Conversation:", formattedConversation);
+
+    const url = "https://api.cohere.ai/generate";
+    const data = {
+      model: "command-xlarge-nightly",
+      prompt: `This is a conversation between 2 people speaking different languages. Only give me 2-4 tags based on the topics of the conversation. Exclude languages.\n\nConversation:\n${formattedConversation}\n\nTags:`,
+      max_tokens: 150,
+      temperature: 0.3,
+    };
+
+    try {
+      const response = await axios.post(url, data, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Full API Response:", response.data.text);
+
+      return response.data.text; // Return the summary
+    } catch (error) {
+      console.error("Error with Cohere API:", error);
+      return null;
+    }
+  };
+
   return (
     <div>
       <h1>Conversation Summary</h1>
@@ -139,6 +175,11 @@ const formatConversation = (messages) => {
       <div>
         <h3>Detailed Summary:</h3>
         <p>{detailedSummary || "Loading detailed summary..."}</p>
+      </div>
+
+      <div>
+        <h3>Tags:</h3>
+        <p>{tag || "Loading tags..."}</p>
       </div>
     </div>
   );

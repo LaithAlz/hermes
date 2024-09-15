@@ -109,3 +109,26 @@ export const getAllUsers = query({
     return await db.query("users").collect();
   },
 });
+
+export const getUserById = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async ({ db }, { userId }) => {
+    return await db.get(userId);
+  },
+});
+
+export const getUserByToken = query({
+  args: {
+    tokenIdentifier: v.string(),
+  },
+  handler: async ({ db }, { tokenIdentifier }) => {
+    const user = await db
+      .query("users") // querying the "users" table
+      .withIndex("by_token", q => q.eq("tokenIdentifier", tokenIdentifier)) 
+      .first(); 
+
+    return user; 
+  },
+});

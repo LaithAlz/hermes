@@ -1,0 +1,121 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.new-chat-button {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 300px;
+}
+
+.header-date {
+  font-size: 16px;
+  color: #666;
+}
+
+/* Main content styling */
+.main-content {
+  padding: 40px;
+}
+
+h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+}
+
+.conversations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.conversation-card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.conversation-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.language-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.language-badge.french {
+  background-color: #ffb74d;
+}
+
+.language-badge.spanish {
+  background-color: #64b5f6;
+}
+
+.conversation-date {
+  font-size: 14px;
+  color: #888;
+  margin-top: 8px;
+}
+
+.tags {
+  margin-top: 10px;
+}
+
+.tag {
+  background-color: #2d3641;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.view-more-button {
+  margin-top: 20px;
+  background-color: transparent;
+  color: #2d3641;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: underline;
+}

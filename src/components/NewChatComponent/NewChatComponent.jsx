@@ -1,34 +1,47 @@
-import React, { useState } from 'react';
-import styles from './NewChatComponent.module.css';
-import ChatComponent from '../ChatComponent/ChatComponent';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // For navigation
+import { useMutation } from "convex/react"; // For calling Convex mutations
+import { api } from "../../../convex/_generated/api"; // Import Convex API
+import styles from "./NewChatComponent.module.css";
+import { useAuth } from "../Firebase/context";
 
 function NewChatComponent() {
-
   const languages = [
-    { language: "French", shortCode: 'fr', longCode: "fr-FR"},
-    { language: "Spanish", shortCode: 'es', longCode: "es-ES" },
-    { language: "Chinese", shortCode: 'zh', longCode: "zh-CN" },
-    { language: "Arabic", shortCode: 'ar', longCode: "ar-XA" },
-    { language: "Russian", shortCode: 'ru', longCode: "ru-RU" },
-];
+    { language: "French", shortCode: "fr", longCode: "fr-FR" },
+    { language: "Spanish", shortCode: "es", longCode: "es-ES" },
+    { language: "Chinese", shortCode: "zh", longCode: "zh-CN" },
+    { language: "Arabic", shortCode: "ar", longCode: "ar-XA" },
+    { language: "Russian", shortCode: "ru", longCode: "ru-RU" },
+  ];
 
-  const [language, setLanguage] = useState(null);
+  const navigate = useNavigate(); // For navigation
+  const createConversation = useMutation(api.myFunctions.createConversation); // Convex mutation to create conversation
 
-  const handleLanguageSelection = (language) => {
-    setLanguage(language);
-  }
+  const firebaseAuth = useAuth();
+  const userId = firebaseAuth.currentUser.uid;
+  console.log("logged in user id", userId);
+  const handleLanguageSelection = async (language) => {
+    const participants = [userId, "user2"]; // Replace with actual participant logic
 
-  if (language) { 
-    return <ChatComponent language={language.language} shortCode={language.shortCode} longCode={language.longCode}/>
-  }
+    // Call the createConversation mutation to create the conversation in Convex
+    const { conversationId } = await createConversation({ participants });
+
+    // Navigate to the ChatComponent with the conversationId
+    navigate(`/conversation/${conversationId}`, { state: { language } });
+  };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.Title}>Select a language you would like to communicate in</h1>
+      <h1 className={styles.Title}>
+        Select a language you would like to communicate in
+      </h1>
       <div className={styles.buttonList}>
         {languages.map((language) => (
-          <button key={language.languageCode} onClick={() => handleLanguageSelection(language)}>
-              Let's Talk in {language.language}
+          <button
+            key={language.shortCode}
+            onClick={() => handleLanguageSelection(language)}
+          >
+            Let's Talk in {language.language}
           </button>
         ))}
       </div>
