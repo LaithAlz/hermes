@@ -1,0 +1,43 @@
+.topicContainer {
+  display: flex;
+  margin-top: 24px;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+
+.topicTag,
+.addTopicButton {
+  border-radius: 36px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  padding: 4px 12px;
+}
+
+.topicTag {
+  background-color: #2d3641;
+}
+
+.addTopicButton {
+  color: #2d3641;
+  border: 1px solid #2d3641;
+  background: none;
+  cursor: pointer;
+}
+
+.icon {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+}
+
+@media (max-width: 991px) {
+  .topicContainer {
+    max-width: 100%;
+  }
+}

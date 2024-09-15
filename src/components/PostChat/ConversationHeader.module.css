@@ -1,0 +1,26 @@
+.header {
+    font-family: 'DM Sans', sans-serif;
+    color: #2d3641;
+    max-width: 368px;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: 900;
+    text-align: center;
+  }
+  
+  .metadata {
+    display: flex;
+    margin-top: 8px;
+    gap: 8px;
+    font-size: 16px;
+  }
+  
+  .date {
+    font-weight: 700;
+  }
+  
+  .duration {
+    font-weight: 400;
+  }

@@ -1,0 +1,66 @@
+.card {
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  flex: 1;
+  flex-basis: 0%;
+  padding: 16px;
+  border: 1px solid rgba(45, 54, 65, 0.33);
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+}
+
+.cardContent {
+  display: flex;
+  margin-top: 16px;
+  width: 100%;
+  flex-direction: column;
+}
+
+.name {
+  color: #2d3641;
+  font-size: 16px;
+}
+
+.language {
+  align-self: start;
+  border-radius: 36px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #fff;
+  padding: 4px 8px;
+}
+
+.french {
+  background-color: #0588d6;
+}
+
+.spanish {
+  background-color: #ffb601;
+}
+
+.date {
+  color: #2d3641;
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 16px;
+}
+
+.tagContainer {
+  display: flex;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  border-radius: 36px;
+  background-color: #2d3641;
+  font-size: 12px;
+  color: #fff;
+  padding: 4px 8px;
+}

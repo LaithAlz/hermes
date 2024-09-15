@@ -1,0 +1,36 @@
+.notesSection {
+    border-radius: 12px;
+    background-color: #fff;
+    display: flex;
+    margin-top: 70px;
+    min-height: 591px;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid #2d3641;
+  }
+  
+  .notesTitle {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .notesInput {
+    font-size: 12px;
+    font-weight: 400;
+    border: none;
+    resize: none;
+    flex-grow: 1;
+    min-height: 528px;
+  }
+  
+  @media (max-width: 991px) {
+    .notesSection {
+      max-width: 100%;
+      margin-top: 40px;
+    }
+  
+    .notesInput {
+      min-height: 100px;
+    }
+  }

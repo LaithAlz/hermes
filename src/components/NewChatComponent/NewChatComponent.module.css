@@ -1,0 +1,213 @@
+.newChat {
+  background-color: #fff;
+  display: flex;
+  gap: 40px 100px;
+  overflow: hidden;
+  flex-wrap: wrap;
+  padding: 24px 60px;
+}
+
+.container {
+  flex-grow: 1;
+  flex-basis: auto;
+}
+
+.content {
+  display: flex;
+  gap: 20px;
+}
+
+.sidebar {
+  width: 29%;
+}
+
+.sidebarContent {
+  display: flex;
+  min-height: 752px;
+  flex-grow: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  font: 600 14px DM Sans, sans-serif;
+}
+
+.chatIcon, .settingsIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.userInputs {
+  align-self: stretch;
+  display: flex;
+  width: 100%;
+  max-width: 254px;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.nameInput {
+  align-self: stretch;
+  border-radius: 8px;
+  width: 100%;
+  color: #babdc0;
+  padding: 16px;
+  border: 1px solid #2d3641;
+  font: inherit;
+}
+
+.languageSelector {
+  border-radius: 8px;
+  align-self: flex-start;
+  display: flex;
+  margin-top: 8px;
+  align-items: center;
+  gap: 4px;
+  color: #2d3641;
+  padding: 8px 16px;
+  border: 1px solid #2d3641;
+}
+
+.selectLanguage {
+  align-self: stretch;
+  margin: auto 0;
+  font: inherit;
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+
+.dropdownArrow {
+  width: 12px;
+  height: 8px;
+  object-fit: contain;
+}
+
+.mainContent {
+  width: 71%;
+}
+
+.chatHeader {
+  border-radius: 16px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  align-self: stretch;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: auto 0;
+  padding: 24px;
+  border: 1px solid rgba(45, 54, 65, 0.1);
+}
+
+.logoWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  width: 54px;
+  margin: auto 0;
+}
+
+.chatLogo {
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+}
+
+.languageOptions {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  color: #2d3641;
+  justify-content: center;
+  margin: auto 0;
+  font: 700 24px DM Sans, sans-serif;
+}
+
+.languageOption {
+  display: flex;
+  margin-top: 36px;
+  gap: 36px;
+  justify-content: flex-start;
+}
+
+.languageText {
+  width: 402px;
+}
+
+.languageFlag {
+  width: 32px;
+  height: 31px;
+  object-fit: contain;
+  margin: auto 0;
+}
+
+.startButton {
+  border-radius: 36px;
+  background-color: #2d3641;
+  width: 60px;
+  height: 60px;
+  color: #fff;
+  font: 700 12px DM Sans, sans-serif;
+  border: none;
+  cursor: pointer;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 991px) {
+  .newChat {
+    padding: 0 20px;
+  }
+
+  .container {
+    max-width: 100%;
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .sidebar, .mainContent {
+    width: 100%;
+  }
+
+  .sidebarContent > * {
+    margin-top: 21px;
+  }
+
+  .userInputs, .settingsIcon {
+    margin-top: 40px;
+  }
+
+  .chatHeader {
+    max-width: 100%;
+    margin-top: 40px;
+    padding: 0 20px;
+  }
+
+  .languageOption {
+    max-width: 100%;
+  }
+
+  .startButton {
+    white-space: normal;
+  }
+}

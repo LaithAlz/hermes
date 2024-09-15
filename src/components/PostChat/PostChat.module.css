@@ -1,0 +1,32 @@
+.postChat {
+  background-color: #fff;
+  overflow: hidden;
+  padding: 28px 60px;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 20px;
+}
+
+.conversationSection,
+.actionsSection {
+  width: 50%;
+}
+
+@media (max-width: 991px) {
+  .postChat {
+    padding: 0 20px;
+  }
+
+  .contentWrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .conversationSection,
+  .actionsSection {
+    width: 100%;
+  }
+}
