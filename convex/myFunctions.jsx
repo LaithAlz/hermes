@@ -23,7 +23,7 @@ export const getAllConversations = query({
 
 export const getConversation = query({
   args: {
-    conversationId: v.id("conversations"), 
+    conversationId: v.id("conversations"),
   },
   handler: async ({ db }, { conversationId }) => {
     const conversation = await db.get(conversationId);
@@ -43,70 +43,69 @@ export const getConversations = query(async ({ db }, { conversationId }) => {
     .collect();
 });
 
+export const storeMessage = mutation(
+  async (
+    { db },
+    {
+      conversationId,
+      senderId,
+      body,
+      translatedText,
+      audioUrl,
+      textInEnglish,
+      language,
+    }
+  ) => {
+    await db.insert("messages", {
+      conversationId,
+      body,
+      translatedText,
+      audioUrl,
+      senderId,
+      textInEnglish,
+      language,
+      sentAt: Date.now(),
+    });
+  }
+);
+export const getMessages = query(async ({ db }, { conversationId }) => {
+  const messages = await db
+    .query("messages")
+    .withIndex("by_conversation", (q) => q.eq("conversationId", conversationId))
+    .order("asc", "sentAt")
+    .collect();
+  return messages;
+});
 
+export const registerUser = mutation({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    tokenIdentifier: v.string(),
+  },
+  handler: async ({ db }, { name, email, tokenIdentifier }) => {
+    const existingUser = await db
+      .query("users")
+      .withIndex("by_token", (q) => q.eq("tokenIdentifier", tokenIdentifier))
+      .unique();
 
-export const sendMessage = mutation({
-    args: {
-      conversationId: v.id("conversations"), 
-      senderId: v.string(),             
-      body: v.string(),                    
-    },
-    handler: async ({ db }, { conversationId, senderId, body }) => {
-      const sentAt = Date.now(); 
-  
-      await db.insert("messages", {
-        conversationId,
-        senderId,
-        body,
-        sentAt,
-      });
-    },
-  });
+    if (existingUser) {
+      return existingUser;
+    }
 
-  export const getMessages = query({
-    args: {
-      conversationId: v.id("conversations"),
-    },
-    handler: async ({ db }, { conversationId }) => {
-      return await db
-        .query("messages")
-        .withIndex("by_conversation", (q) => q.eq("conversationId", conversationId))
-        .order("asc", "sentAt")
-        .collect();
-    },
-  });
+    const userId = await db.insert("users", {
+      tokenIdentifier: tokenIdentifier,
+      email: email,
+      name: name,
+      createdAt: Date.now(),
+    });
 
+    return { _id: userId, name, email, tokenIdentifier };
+  },
+});
 
-  export const registerUser = mutation({
-    args: {
-      name: v.string(),          
-      email: v.string(),   
-      tokenIdentifier: v.string(), 
-    },
-    handler: async ({ db }, { name, email, tokenIdentifier }) => {
-      const existingUser = await db
-        .query("users")
-        .withIndex("by_token", (q) => q.eq("tokenIdentifier", tokenIdentifier))
-        .unique();
-      
-      if (existingUser) {
-        return existingUser;
-      }
-  
-      const userId = await db.insert("users", {
-        tokenIdentifier: tokenIdentifier,            
-        email: email,
-        name: name,
-        createdAt: Date.now(),
-      });
-  
-      return { _id: userId, name, email, tokenIdentifier };
-    },
-  });
-  
-
-  export const getAllUsers = query({
-    handler: async ({ db }) => {
-      return await db.query("users").collect();
-    },
-  });
+export const getAllUsers = query({
+  handler: async ({ db }) => {
+    return await db.query("users").collect();
+  },
+});
