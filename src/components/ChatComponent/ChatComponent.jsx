@@ -1,24 +1,47 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useChat } from "./ChatContext";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import "./ChatBox.css"; // Import the CSS file
+import ConversationSummary from "../PostChat/ConversationSummary";
+import CohereSummary from "../Summary/CohereSummary";
 import { useAuth } from "../Firebase/context";
 import { doSignOut } from "../Firebase/firebase";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
 
 const ChatBox = ({ language, shortCode, longCode }) => {
 
   const [input, setInput] = useState("");
-  const [user1AudioUrl, setUser1AudioUrl] = useState(null);
-  const [user2AudioUrl, setUser2AudioUrl] = useState(null);
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
+  const [userAudioUrl, setUserAudioUrl] = useState(null);
 
   const recognitionRef1 = useRef(null);
   const recognitionRef2 = useRef(null);
+  const audioRef = useRef(null);
+
+  const { conversation, addMessage, setConversation } = useChat();
+
+  const storeMessage = useMutation(api.myFunctions.storeMessage);
+  const getMessages = useQuery(api.myFunctions.getMessages, {
+    conversationId: "j9703qvhw44rmfh88knmh17kp570t1dn",
+  });
+
+  const conversationId = "j9703qvhw44rmfh88knmh17kp570t1dn";
+  const senderIdUser1 = "jd75rdv8e9s340ktem1jydn1j570vp4r";
+  const senderIdUser2 = "jd781h00mrb7wz724k2xza4h8d70tq35";
+
+  useEffect(() => {
+    if (getMessages) {
+      setConversation(getMessages); // Load the conversation from the database
+    }
+  }, [getMessages, setConversation]);
 
   const setupSpeechRecognition = (lang, setInput) => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return null;
 
     const recognition = new SpeechRecognition();
@@ -58,21 +81,37 @@ const ChatBox = ({ language, shortCode, longCode }) => {
     setCurrentSpeaker(2);
   };
 
-  const { conversation, addMessage } = useChat();
-
   const handleSubmit = async () => {
     if (input.trim() === "") return;
     if (currentSpeaker === null) return;
     
     const targetLanguage = currentSpeaker === 1 ? shortCode : "en";
     const translatedText = await translateText(input, targetLanguage);
+
+    let textInEnglish;
+    let language = "en";
+
+    if (targetLanguage === "en") {
+      textInEnglish = translatedText;
+      language = "fr";
+    } else {
+      textInEnglish = input;
+      language = "en";
+    }
+
     const audioUrl = await generateAudio(translatedText, targetLanguage);
+    if (!audioUrl) {
+      console.error("Audio URL is missing");
+      return;
+    }
 
     const newMessage = {
       user: `User ${currentSpeaker}`,
       originalText: input,
       translatedText,
       audioUrl,
+      textInEnglish,
+      language,
     };
 
     addMessage(newMessage);
@@ -84,6 +123,17 @@ const ChatBox = ({ language, shortCode, longCode }) => {
       setUser2AudioUrl(audio);
     }
 
+    await storeMessage({
+      conversationId,
+      senderId,
+      body: input,
+      translatedText,
+      audioUrl,
+      textInEnglish,
+      language,
+    });
+
+    setUserAudioUrl(audioUrl);
     setInput("");
   };
 
@@ -121,33 +171,33 @@ const ChatBox = ({ language, shortCode, longCode }) => {
       const response = await axios.post(url, requestData);
       const audioContent = response.data.audioContent;
 
-      const audioBlob = new Blob([new Uint8Array(atob(audioContent).split("").map((c) => c.charCodeAt(0)))], {
-        type: "audio/mp3",
-      });
+      const audioBlob = new Blob(
+        [
+          new Uint8Array(
+            atob(audioContent)
+              .split("")
+              .map((c) => c.charCodeAt(0))
+          ),
+        ],
+        {
+          type: "audio/mp3",
+        }
+      );
       return URL.createObjectURL(audioBlob);
     } catch (error) {
       console.error("Error generating audio:", error);
     }
   };
 
-  const playAudio = (audio) => {
-    if (audio) {
-      audio.play();
-    }
-  };
-
-  const navigate = useNavigate();
-  const { currentUser } = useAuth()
   useEffect(() => {
-    if (!currentUser) {
-        navigate("/signin");
+    if (userAudioUrl && audioRef.current) {
+      audioRef.current.src = userAudioUrl;
+      audioRef.current.play();
     }
-  }, [currentUser]);
+  }, [userAudioUrl]);
 
   return (
-    <div>
-      <button onClick={doSignOut}>Sign out</button>
-      <h2>Chat Box</h2>
+    <div className="chat-box-container">
       <div>
       <button onClick={startListeningUser1}>Speak in English</button>
         <textarea
@@ -157,22 +207,46 @@ const ChatBox = ({ language, shortCode, longCode }) => {
         />
         <button onClick={startListeningUser2}>Speak in {language}</button>
 
-        <button onClick={handleSubmit}>Send</button>
+        <div className="input-container">
+          <button className="button" onClick={startListeningUser1}>
+            Speak in English
+          </button>
+          <textarea
+            className="textarea"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter text here or speak..."
+          />
+          <button className="button" onClick={startListeningUser2}>
+            Speak in {language}
+          </button>
+          <button className="button send" onClick={handleSubmit}>
+            Send
+          </button>
+        </div>
 
-      </div>
+        <div className="conversation-container">
+          <h3>Conversation</h3>
+          {conversation.map((msg, index) => (
+            <div key={index} className={`message ${msg.user}`}>
+              <strong>{msg.user}:</strong>
+              <p>Original: {msg.body}</p>
+              <p>Translated: {msg.translatedText}</p>
+              <button
+                className="button play"
+                onClick={() => setUserAudioUrl(msg.audioUrl)}
+              >
+                Play
+              </button>
+            </div>
+          ))}
+        </div>
 
-      <div>
-        <h3>Conversation:</h3>
-        {conversation.map((msg, index) => (
-          <div key={index} className={`message ${msg.user}`}>
-            <strong>{msg.user}:</strong>
-            <p>Original: {msg.originalText}</p>
-            <p>Translated: {msg.translatedText}</p>
-            <button onClick={() => playAudio(currentSpeaker === 1 ? user1AudioUrl : currentSpeaker === 2 ? user2AudioUrl : null)}>Play</button>
-          </div>
-        ))}
+        <audio ref={audioRef} hidden />
+
+        <CohereSummary conversationId={conversationId} />
       </div>
-    </div>
+    </div> // Closing div added here
   );
 };
 
