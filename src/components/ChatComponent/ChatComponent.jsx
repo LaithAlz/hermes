@@ -195,49 +195,49 @@ const ChatBox = () => {
 
   return (
     <div className="chat-box-container">
-    <div>
-      <button onClick={doSignOut}>Sign out</button>
-      <h2>Chat Box</h2>
+      <div>
+        <button onClick={doSignOut}>Sign out</button>
+        <h2>Chat Box</h2>
 
-      <div className="input-container">
-        <button className="button" onClick={startListeningUser1}>
-          Speak in English
-        </button>
-        <textarea
-          className="textarea"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter text here or speak..."
-        />
-        <button className="button" onClick={startListeningUser2}>
-          Speak in French
-        </button>
-        <button className="button send" onClick={handleSubmit}>
-          Send
-        </button>
+        <div className="input-container">
+          <button className="button" onClick={startListeningUser1}>
+            Speak in English
+          </button>
+          <textarea
+            className="textarea"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter text here or speak..."
+          />
+          <button className="button" onClick={startListeningUser2}>
+            Speak in French
+          </button>
+          <button className="button send" onClick={handleSubmit}>
+            Send
+          </button>
+        </div>
+
+        <div className="conversation-container">
+          <h3>Conversation</h3>
+          {conversation.map((msg, index) => (
+            <div key={index} className={`message ${msg.user}`}>
+              <strong>{msg.user}:</strong>
+              <p>Original: {msg.body}</p>
+              <p>Translated: {msg.translatedText}</p>
+              <button
+                className="button play"
+                onClick={() => setUserAudioUrl(msg.audioUrl)}
+              >
+                Play
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <audio ref={audioRef} hidden />
+
+        <CohereSummary conversationId={conversationId} />
       </div>
-
-      <div className="conversation-container">
-        <h3>Conversation</h3>
-        {conversation.map((msg, index) => (
-          <div key={index} className={`message ${msg.user}`}>
-            <strong>{msg.user}:</strong>
-            <p>Original: {msg.body}</p>
-            <p>Translated: {msg.translatedText}</p>
-            <button
-              className="button play"
-              onClick={() => setUserAudioUrl(msg.audioUrl)}
-            >
-              Play
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <audio ref={audioRef} hidden />
-
-      <CohereSummary conversationId={conversationId} />
-    </div>
   );
 };
 
