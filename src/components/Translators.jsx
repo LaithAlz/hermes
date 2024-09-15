@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import axios from "axios";
-import { api } from "../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import { useAuth } from "./Firebase/context";
 import { doSignOut } from "./Firebase/firebase";
 import {useNavigate} from 'react-router-dom';
