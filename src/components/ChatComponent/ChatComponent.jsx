@@ -14,6 +14,13 @@ const ChatBox = () => {
   const location = useLocation(); // To get passed conversationId
   const { conversationId } = location.state; // Extract the conversationId from state (language is no longer needed)
 
+  const decodeHtmlEntities = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.innerHTML = text;
+    return textArea.value;
+  };
+  
+
   const [input, setInput] = useState("");
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
   const [userAudioUrl, setUserAudioUrl] = useState(null);
@@ -89,20 +96,23 @@ const ChatBox = () => {
   const handleSubmit = async () => {
     if (input.trim() === "") return;
     if (currentSpeaker === null) return;
-
+  
     // Always translate to Arabic (hardcoded)
     const targetLanguage = currentSpeaker === 1 ? "ar" : "en"; // Translate User 1's English to Arabic
-    const translatedText = await translateText(input, targetLanguage);
-
+    let translatedText = await translateText(input, targetLanguage);
+  
+    // Decode HTML entities
+    translatedText = decodeHtmlEntities(translatedText);
+  
     let textInEnglish = currentSpeaker === 1 ? translatedText : input;
     let languageSpoken = currentSpeaker === 1 ? "en" : "ar";
-
+  
     const audioUrl = await generateAudio(translatedText, targetLanguage);
     if (!audioUrl) {
       console.error("Audio URL is missing");
       return;
     }
-
+  
     const newMessage = {
       user: `User ${currentSpeaker}`,
       originalText: input,
@@ -111,11 +121,11 @@ const ChatBox = () => {
       textInEnglish,
       language: languageSpoken,
     };
-
+  
     addMessage(newMessage);
-
+  
     const senderId = currentSpeaker === 1 ? senderIdUser1 : senderIdUser2;
-
+  
     await storeMessage({
       conversationId,
       senderId,
@@ -125,10 +135,11 @@ const ChatBox = () => {
       textInEnglish,
       language: languageSpoken,
     });
-
+  
     setUserAudioUrl(audioUrl);
     setInput("");
   };
+  
 
   const translateText = async (text, targetLanguage) => {
     const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
