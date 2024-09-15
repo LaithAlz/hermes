@@ -5,7 +5,7 @@ import { ChatProvider } from '../ChatComponent/ChatContext';
 import SignIn from '../SignIn/SignIn';
 import SignUp from '../SignUp/SignUp';
 import ChatComponent from '../ChatComponent/ChatComponent';
-import HomePage from '../HomePage/HomePage';
+import HomePage from '../HomePage/Home';
 import NewChatComponent from '../NewChatComponent/NewChatComponent';
 import PostChat from '../PostChat/PostChat';
 

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useChat } from "./ChatContext";
 import { useMutation, useQuery } from "convex/react";
@@ -6,6 +7,9 @@ import { api } from "../../../convex/_generated/api";
 import "./ChatBox.css"; // Import the CSS file
 import ConversationSummary from "../PostChat/ConversationSummary";
 import CohereSummary from "../Summary/CohereSummary";
+import { useAuth } from "../Firebase/context";
+import { doSignOut } from "../Firebase/firebase";
+import { useNavigate } from 'react-router-dom';
 
 const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
 
@@ -191,6 +195,8 @@ const ChatBox = () => {
 
   return (
     <div className="chat-box-container">
+    <div>
+      <button onClick={doSignOut}>Sign out</button>
       <h2>Chat Box</h2>
 
       <div className="input-container">

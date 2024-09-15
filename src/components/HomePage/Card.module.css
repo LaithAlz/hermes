@@ -1,0 +1,10 @@
+.cardstyle{
+    width: 100%;
+
+    border-radius: 8px;
+    border: 1px;
+    border-color: rgba(45,54,65,0.3);
+    padding: 16px;
+    display: block;
+    float: left;
+}
