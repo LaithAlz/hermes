@@ -4,35 +4,35 @@ import { useChat } from "./ChatContext";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import "./ChatBox.css"; // Import the CSS file
-import ConversationSummary from "../PostChat/ConversationSummary";
 import CohereSummary from "../Summary/CohereSummary";
-import { useAuth } from "../Firebase/context";
 import { doSignOut } from "../Firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // For accessing navigation state
 
 const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
 
-const ChatBox = ({ language, shortCode, longCode }) => {
+const ChatBox = () => {
+  const location = useLocation(); // To get passed conversationId
+  const { conversationId } = location.state; // Extract the conversationId from state (language is no longer needed)
 
   const [input, setInput] = useState("");
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
   const [userAudioUrl, setUserAudioUrl] = useState(null);
 
-  const recognitionRef1 = useRef(null);
-  const recognitionRef2 = useRef(null);
+  const recognitionRef1 = useRef(null); // Ref for English
+  const recognitionRef2 = useRef(null); // Ref for Arabic
   const audioRef = useRef(null);
 
   const { conversation, addMessage, setConversation } = useChat();
 
   const storeMessage = useMutation(api.myFunctions.storeMessage);
   const getMessages = useQuery(api.myFunctions.getMessages, {
-    conversationId: "j9703qvhw44rmfh88knmh17kp570t1dn",
+    conversationId, // Use the conversationId passed dynamically
   });
 
-  const conversationId = "j9703qvhw44rmfh88knmh17kp570t1dn";
-  const senderIdUser1 = "jd75rdv8e9s340ktem1jydn1j570vp4r";
-  const senderIdUser2 = "jd781h00mrb7wz724k2xza4h8d70tq35";
+  const senderIdUser1 = "jd75rdv8e9s340ktem1jydn1j570vp4r"; // Replace with current user ID
+  const senderIdUser2 = "jd781h00mrb7wz724k2xza4h8d70tq35"; // Replace with recipient user ID
 
+  // Only load messages from the specific conversationId
   useEffect(() => {
     if (getMessages) {
       setConversation(getMessages); // Load the conversation from the database
@@ -63,41 +63,39 @@ const ChatBox = ({ language, shortCode, longCode }) => {
     return recognition;
   };
 
-  if (!recognitionRef1.current) {
-    recognitionRef1.current = setupSpeechRecognition("en-US", setInput);
-  }
+  // Initialize English and hardcoded Arabic speech recognition
+  useEffect(() => {
+    if (!recognitionRef1.current) {
+      // Setup speech recognition for English
+      recognitionRef1.current = setupSpeechRecognition("en-US", setInput);
+    }
 
-  if (!recognitionRef2.current) {
-    recognitionRef2.current = setupSpeechRecognition(longCode, setInput);
-  }
+    if (!recognitionRef2.current) {
+      // Setup speech recognition for Arabic (hardcoded)
+      recognitionRef2.current = setupSpeechRecognition("ar-SA", setInput);
+    }
+  }, []);
 
   const startListeningUser1 = () => {
     recognitionRef1.current?.start();
-    setCurrentSpeaker(1);
+    setCurrentSpeaker(1); // User 1 speaks English
   };
 
   const startListeningUser2 = () => {
     recognitionRef2.current?.start();
-    setCurrentSpeaker(2);
+    setCurrentSpeaker(2); // User 2 speaks Arabic
   };
 
   const handleSubmit = async () => {
     if (input.trim() === "") return;
     if (currentSpeaker === null) return;
-    
-    const targetLanguage = currentSpeaker === 1 ? shortCode : "en";
+
+    // Always translate to Arabic (hardcoded)
+    const targetLanguage = currentSpeaker === 1 ? "ar" : "en"; // Translate User 1's English to Arabic
     const translatedText = await translateText(input, targetLanguage);
 
-    let textInEnglish;
-    let language = "en";
-
-    if (targetLanguage === "en") {
-      textInEnglish = translatedText;
-      language = "fr";
-    } else {
-      textInEnglish = input;
-      language = "en";
-    }
+    let textInEnglish = currentSpeaker === 1 ? translatedText : input;
+    let languageSpoken = currentSpeaker === 1 ? "en" : "ar";
 
     const audioUrl = await generateAudio(translatedText, targetLanguage);
     if (!audioUrl) {
@@ -111,17 +109,12 @@ const ChatBox = ({ language, shortCode, longCode }) => {
       translatedText,
       audioUrl,
       textInEnglish,
-      language,
+      language: languageSpoken,
     };
 
     addMessage(newMessage);
 
-    const audio = new Audio(audioUrl);
-    if (currentSpeaker === 1) {
-      setUser1AudioUrl(audio);
-    } else {
-      setUser2AudioUrl(audio);
-    }
+    const senderId = currentSpeaker === 1 ? senderIdUser1 : senderIdUser2;
 
     await storeMessage({
       conversationId,
@@ -130,7 +123,7 @@ const ChatBox = ({ language, shortCode, longCode }) => {
       translatedText,
       audioUrl,
       textInEnglish,
-      language,
+      language: languageSpoken,
     });
 
     setUserAudioUrl(audioUrl);
@@ -153,13 +146,14 @@ const ChatBox = ({ language, shortCode, longCode }) => {
 
   const generateAudio = async (text, languageCode) => {
     const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
-    const ttsLanguageCode = `${languageCode}-${languageCode.toUpperCase()}`;
-    const ttsVoice = languageCode === shortCode ? `${longCode}-Wavenet-A` : "en-US-Wavenet-A";
+    const ttsVoice = languageCode === "ar"
+      ? "ar-XA-Wavenet-A" // Hardcode Arabic voice for TTS
+      : "en-US-Wavenet-A"; // Default to English
 
     const requestData = {
       input: { text },
       voice: {
-        languageCode: ttsLanguageCode,
+        languageCode: `${languageCode}-${languageCode.toUpperCase()}`,
         name: ttsVoice,
       },
       audioConfig: {
@@ -172,16 +166,8 @@ const ChatBox = ({ language, shortCode, longCode }) => {
       const audioContent = response.data.audioContent;
 
       const audioBlob = new Blob(
-        [
-          new Uint8Array(
-            atob(audioContent)
-              .split("")
-              .map((c) => c.charCodeAt(0))
-          ),
-        ],
-        {
-          type: "audio/mp3",
-        }
+        [new Uint8Array(atob(audioContent).split("").map((c) => c.charCodeAt(0)))],
+        { type: "audio/mp3" }
       );
       return URL.createObjectURL(audioBlob);
     } catch (error) {
@@ -199,13 +185,8 @@ const ChatBox = ({ language, shortCode, longCode }) => {
   return (
     <div className="chat-box-container">
       <div>
-      <button onClick={startListeningUser1}>Speak in English</button>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter text here/speak to populate"
-        />
-        <button onClick={startListeningUser2}>Speak in {language}</button>
+        <button onClick={doSignOut}>Sign out</button>
+        <h2>Chat Box</h2>
 
         <div className="input-container">
           <button className="button" onClick={startListeningUser1}>
@@ -218,7 +199,7 @@ const ChatBox = ({ language, shortCode, longCode }) => {
             placeholder="Enter text here or speak..."
           />
           <button className="button" onClick={startListeningUser2}>
-            Speak in {language}
+            Speak in Arabic
           </button>
           <button className="button send" onClick={handleSubmit}>
             Send
@@ -229,9 +210,12 @@ const ChatBox = ({ language, shortCode, longCode }) => {
           <h3>Conversation</h3>
           {conversation.map((msg, index) => (
             <div key={index} className={`message ${msg.user}`}>
-              <strong>{msg.user}:</strong>
-              <p>Original: {msg.body}</p>
-              <p>Translated: {msg.translatedText}</p>
+              <p style={{ direction: msg.language === "ar" ? "rtl" : "ltr" }}>
+                Original: {msg.body}
+              </p>
+              <p style={{ direction: msg.language === "ar" ? "rtl" : "ltr" }}>
+                Translated: {msg.translatedText}
+              </p>
               <button
                 className="button play"
                 onClick={() => setUserAudioUrl(msg.audioUrl)}
@@ -246,7 +230,7 @@ const ChatBox = ({ language, shortCode, longCode }) => {
 
         <CohereSummary conversationId={conversationId} />
       </div>
-    </div> // Closing div added here
+    </div>
   );
 };
 

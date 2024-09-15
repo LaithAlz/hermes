@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Firebase/context";
-import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
 
 import "./Home.css"; // Custom CSS file
 
@@ -18,21 +16,48 @@ function Home() {
 
   const today = new Date().toLocaleDateString();
 
-  // Fetch conversations from Convex API
-  const conversations = useQuery(api.myFunctions.getAllConversations);
+  // Hardcoded conversations
+  const conversations = [
+    {
+      _id: "1",
+      name: "Business Discussion",
+      language: "English",
+      createdAt: "2023-09-10T10:30:00Z",
+      tags: ["business", "meeting"],
+    },
+    {
+      _id: "2",
+      name: "Family Chat",
+      language: "Arabic",
+      createdAt: "2023-09-12T15:00:00Z",
+      tags: ["family", "personal"],
+    },
+    {
+      _id: "3",
+      name: "Project Collaboration",
+      language: "French",
+      createdAt: "2023-09-14T12:45:00Z",
+      tags: ["work", "project"],
+    },
+    {
+      _id: "4",
+      name: "Study Group",
+      language: "Spanish",
+      createdAt: "2023-09-13T18:20:00Z",
+      tags: ["education", "study"],
+    },
+    {
+      _id: "5",
+      name: "Travel Plans",
+      language: "Chinese",
+      createdAt: "2023-09-09T09:15:00Z",
+      tags: ["travel", "plans"],
+    },
+  ];
 
   const handleConversationClick = (conversationId) => {
     navigate(`/conversation/${conversationId}`);
   };
-
-  if (conversations === undefined) {
-    // While the conversations are loading or if there's an error
-    return (
-      <div className="loading-state">
-        <p>Loading conversations...</p>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -63,13 +88,15 @@ function Home() {
                 className="conversation-card"
                 onClick={() => handleConversationClick(conversation._id)}
               >
-                <h3>{conversation.name || 'Unnamed Conversation'}</h3>
+                <h3>{conversation.name}</h3>
                 <span
-                  className={`language-badge ${conversation.language?.toLowerCase() || 'unknown'}`}
+                  className={`language-badge ${conversation.language?.toLowerCase() || "unknown"}`}
                 >
-                  {conversation.language || 'Unknown Language'}
+                  {conversation.language || "Unknown"}
                 </span>
-                <p className="conversation-date">{conversation.createdAt ? new Date(conversation.createdAt).toLocaleDateString() : 'Unknown Date'}</p>
+                <p className="conversation-date">
+                  {new Date(conversation.createdAt).toLocaleDateString()}
+                </p>
                 <div className="tags">
                   {conversation.tags && conversation.tags.length > 0 ? (
                     conversation.tags.map((tag, i) => (

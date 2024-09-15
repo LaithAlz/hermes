@@ -7,10 +7,10 @@ import { useAuth } from "../Firebase/context";
 
 function NewChatComponent() {
   const languages = [
+    { language: "Arabic", shortCode: "ar", longCode: "ar-SA" },
     { language: "French", shortCode: "fr", longCode: "fr-FR" },
     { language: "Spanish", shortCode: "es", longCode: "es-ES" },
     { language: "Chinese", shortCode: "zh", longCode: "zh-CN" },
-    { language: "Arabic", shortCode: "ar", longCode: "ar-XA" },
     { language: "Russian", shortCode: "ru", longCode: "ru-RU" },
   ];
 
@@ -20,14 +20,17 @@ function NewChatComponent() {
   const firebaseAuth = useAuth();
   const userId = firebaseAuth.currentUser.uid;
   console.log("logged in user id", userId);
+
   const handleLanguageSelection = async (language) => {
-    const participants = [userId, "user2"]; // Replace with actual participant logic
+    const participants = [userId, "user2"];
 
     // Call the createConversation mutation to create the conversation in Convex
     const { conversationId } = await createConversation({ participants });
 
-    // Navigate to the ChatComponent with the conversationId
-    navigate(`/conversation/${conversationId}`, { state: { language } });
+    // Navigate to the ChatComponent with the conversationId and selected language
+    navigate(`/conversation/${conversationId}`, {
+      state: { language, conversationId },
+    });
   };
 
   return (

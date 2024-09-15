@@ -61,11 +61,12 @@ h2 {
 }
 
 .conversation-card {
-  background-color: white;
-  border: 1px solid #e0e0e0;
+  background-color: #2d2d2d; /* Darker card background */
+  border: 1px solid #444; /* Darker border */
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white; /* Text color for dark background */
 }
 
 .conversation-card h3 {
@@ -92,7 +93,7 @@ h2 {
 
 .conversation-date {
   font-size: 14px;
-  color: #888;
+  color: #ccc; /* Lighter text for contrast */
   margin-top: 8px;
 }
 
@@ -101,7 +102,7 @@ h2 {
 }
 
 .tag {
-  background-color: #2d3641;
+  background-color: #444; /* Slightly lighter for tag background */
   color: white;
   padding: 4px 8px;
   border-radius: 8px;
