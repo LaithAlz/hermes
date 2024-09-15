@@ -1,6 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useChat } from "./ChatContext";
+import { useAuth } from "../Firebase/context";
+import { doSignOut } from "../Firebase/firebase";
+import { useNavigate } from 'react-router-dom';
 
 const apiKey = "AIzaSyA-GV750Rpm2H9iEJylsAES5IeWP5aBlP0";
 
@@ -134,10 +137,18 @@ const ChatBox = () => {
     }
   };
 
+  const navigate = useNavigate();
+  const { currentUser } = useAuth()
+  useEffect(() => {
+    if (!currentUser) {
+        navigate("/signin");
+    }
+  }, [currentUser]);
+
   return (
     <div>
+      <button onClick={doSignOut}>Sign out</button>
       <h2>Chat Box</h2>
-
       <div>
       <button onClick={startListeningUser1}>Speak in English</button>
         <textarea
