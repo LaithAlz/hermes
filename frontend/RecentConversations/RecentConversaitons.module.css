@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: start;
+  }
+  
+  .title {
+    color: #2d3641;
+    font-size: 24px;
+  }
+  
+  .conversationList {
+    display: flex;
+    margin-top: 32px;
+    width: 100%;
+    align-items: center;
+    gap: 20px;
+    justify-content: start;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 991px) {
+    .conversationList {
+      max-width: 100%;
+    }
+  }
+  
+  .viewMore {
+    color: #2d3641;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 32px;
+  }
+  
+  @media (max-width: 991px) {
+    .viewMore {
+      max-width: 100%;
+    }
+  }
