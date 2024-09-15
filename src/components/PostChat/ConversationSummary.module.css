@@ -1,0 +1,16 @@
+.summary {
+    color: #2d3641;
+    font-weight: 500;
+    line-height: 36px;
+    margin-top: 36px;
+  }
+  
+  .summary p {
+    margin-bottom: 1em;
+  }
+  
+  @media (max-width: 991px) {
+    .summary {
+      max-width: 100%;
+    }
+  }

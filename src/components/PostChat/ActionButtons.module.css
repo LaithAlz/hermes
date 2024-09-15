@@ -1,0 +1,50 @@
+.buttonContainer {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    flex-wrap: wrap;
+  }
+  
+  .shareButton,
+  .discardButton,
+  .saveButton {
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+  
+  .shareButton {
+    gap: 10px;
+    background: none;
+    border: 1px solid #2d3641;
+  }
+  
+  .discardButton {
+    background: none;
+    border: 1px solid #2d3641;
+  }
+  
+  .saveButton {
+    background-color: #2d3641;
+    color: #fff;
+    border: none;
+  }
+  
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  @media (max-width: 991px) {
+    .buttonContainer {
+      max-width: 100%;
+    }
+  }
