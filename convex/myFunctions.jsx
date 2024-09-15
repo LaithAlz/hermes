@@ -1,0 +1,108 @@
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+
+export const createConversation = mutation({
+  args: {
+    participants: v.array(v.string()),
+  },
+  handler: async ({ db }, { participants }) => {
+    const conversationId = await db.insert("conversations", {
+      participants,
+      createdAt: Date.now(),
+    });
+
+    return { conversationId };
+  },
+});
+
+export const getAllConversations = query({
+  handler: async ({ db }) => {
+    return await db.query("conversations").collect();
+  },
+});
+
+export const getConversation = query({
+  args: {
+    conversationId: v.id("conversations"), 
+  },
+  handler: async ({ db }, { conversationId }) => {
+    const conversation = await db.get(conversationId);
+
+    if (!conversation) {
+      throw new Error(`Conversation with ID ${conversationId} not found`);
+    }
+
+    return conversation;
+  },
+});
+
+export const getConversations = query(async ({ db }, { conversationId }) => {
+  return await db
+    .query("messages")
+    .filter((q) => q.eq(q.field("conversationId"), conversationId))
+    .collect();
+});
+
+
+
+export const sendMessage = mutation({
+    args: {
+      conversationId: v.id("conversations"), 
+      senderId: v.string(),             
+      body: v.string(),                    
+    },
+    handler: async ({ db }, { conversationId, senderId, body }) => {
+      const sentAt = Date.now(); 
+  
+      await db.insert("messages", {
+        conversationId,
+        senderId,
+        body,
+        sentAt,
+      });
+    },
+  });
+
+  export const getMessages = query({
+    args: {
+      conversationId: v.id("conversations"),
+    },
+    handler: async ({ db }, { conversationId }) => {
+      return await db
+        .query("messages")
+        .withIndex("by_conversation", (q) => q.eq("conversationId", conversationId))
+        .order("asc", "sentAt")
+        .collect();
+    },
+  });
+
+
+  export const registerUser = mutation({
+    args: {
+      name: v.string(),    
+      tokenIdentifier: v.string(), 
+    },
+    handler: async ({ db }, { name, tokenIdentifier }) => {
+      const existingUser = await db
+        .query("users")
+        .withIndex("by_token", (q) => q.eq("tokenIdentifier", tokenIdentifier))
+        .unique();
+      
+      if (existingUser) {
+        return existingUser;
+      }
+  
+      const userId = await db.insert("users", {
+        name,
+        tokenIdentifier,
+      });
+  
+      return { _id: userId, name, tokenIdentifier };
+    },
+  });
+
+  export const getAllUsers = query({
+    handler: async ({ db }) => {
+      return await db.query("users").collect();
+    },
+  });
